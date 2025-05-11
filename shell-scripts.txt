@@ -1,0 +1,119 @@
+
+🔁 Script 1: Print “hello” once
+--------------------------------
+#!/bin/bash
+echo "hello"
+
+Explanation:
+- #!/bin/bash – Shebang tells the OS to use the bash shell.
+- echo "hello" – Prints the word hello.
+
+🔁 Script 2: Store “hello” in a variable and print
+-------------------------------------------------
+#!/bin/bash
+greeting="hello"
+echo $greeting
+
+Explanation:
+- greeting="hello" – Stores hello in a variable named greeting.
+- echo $greeting – Prints the value of greeting.
+
+🔁 Script 3: Print “hello” 5 times using a for loop
+--------------------------------------------------
+#!/bin/bash
+for i in {1..5}
+do
+  echo "hello"
+done
+
+Explanation:
+- for i in {1..5} – Loops from 1 to 5.
+- echo "hello" – Runs 5 times.
+
+🔁 Script 4: Use a variable in a loop to customize output
+---------------------------------------------------------
+#!/bin/bash
+name="John"
+for i in {1..3}
+do
+  echo "hello $name"
+done
+
+Explanation:
+- name="John" – Stores a name in a variable.
+- The loop prints "hello John" three times.
+
+🔁 Script 5: Use a while loop
+----------------------------
+#!/bin/bash
+count=1
+while [ $count -le 3 ]
+do
+  echo "hello"
+  ((count++))
+done
+
+Explanation:
+- count=1 – Initialize counter.
+- while [ $count -le 3 ] – Loop runs while count ≤ 3.
+- ((count++)) – Increments the count.
+
+🔁 Script 6: Read name from user and say hello
+---------------------------------------------
+#!/bin/bash
+read -p "Enter your name: " username
+echo "hello $username"
+
+Explanation:
+- read -p – Prompts the user for input.
+- echo "hello $username" – Greets the user.
+
+🔁 Script 7: Loop through a list of names
+----------------------------------------
+#!/bin/bash
+for name in Alice Bob Charlie
+do
+  echo "hello $name"
+done
+
+Explanation:
+- Loops through each name and says hello.
+
+🔁 Script 8: Print hello with loop counter
+-----------------------------------------
+#!/bin/bash
+for i in {1..3}
+do
+  echo "hello - $i"
+done
+
+Explanation:
+- Adds the counter value after hello like hello - 1, hello - 2, etc.
+
+🔁 Script 9: Function to print hello
+-----------------------------------
+#!/bin/bash
+say_hello() {
+  echo "hello"
+}
+say_hello
+
+Explanation:
+- Defines a function say_hello.
+- Calls it once.
+
+🔁 Script 10: Loop calling a function with a variable
+-----------------------------------------------------
+#!/bin/bash
+say_hello() {
+  echo "hello $1"
+}
+
+for name in Tom Jerry Spike
+do
+  say_hello $name
+done
+
+Explanation:
+- Function takes a parameter ($1) and prints hello <name>.
+- Loop sends each name to the function.
