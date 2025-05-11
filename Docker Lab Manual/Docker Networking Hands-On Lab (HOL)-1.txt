@@ -1,0 +1,112 @@
+Docker Networking Hands-On Lab (HOL)
+===================================
+
+1. Docker Networking Fundamentals
+--------------------------------
+
+1.1 What is Docker Networking?
+Enables communication between:
+- Containers and host machine
+- Multiple containers
+- Containers and external networks
+
+1.2 Network Drivers
++----------+-------------------------------------+----------------------------+
+| Driver   | Description                         | Use Case                   |
++----------+-------------------------------------+----------------------------+
+| Bridge   | Default network (docker0)           | Isolated container comms   |
+| Host     | Shares host's network stack         | High-performance apps      |
+| None     | No networking                       | Security-sensitive containers|
+| Overlay  | Connects multiple Docker daemons    | Docker Swarm clusters      |
+| Macvlan  | Assigns MAC address to container    | Legacy applications        |
++----------+-------------------------------------+----------------------------+
+
+1.3 Key Components
+- Network Namespace: Isolated network stack per container
+- veth Pair: Virtual Ethernet device
+- docker0: Default Linux bridge
+
+2. Default Docker Networks
+-------------------------
+
+2.1 View Networks:
+$ docker network ls
+
+Sample Output:
+NETWORK ID     NAME      DRIVER    SCOPE
+abc123         bridge    bridge    local
+def456         host      host      local
+ghi789         none      null      local
+
+2.2 Inspect Bridge:
+$ docker network inspect bridge
+
+3. Essential Commands
+---------------------
+
+3.1 Create Custom Bridge:
+$ docker network create --driver bridge \
+  --subnet 192.168.100.0/24 \
+  --gateway 192.168.100.1 \
+  my_custom_net
+
+3.2 Connect Containers:
+$ docker run -d --name web --network my_custom_net nginx
+
+3.3 Port Publishing:
+$ docker run -d -p 8080:80 --name webserver nginx
+
+4. Practical Examples
+---------------------
+
+4.1 Multi-Tier App:
+$ docker network create app_network
+$ docker run -d --name db --network app_network mysql
+$ docker run -d --name web --network app_network -p 8080:80 wordpress
+
+4.2 Container Communication:
+$ docker run -d --name c1 --network my_net alpine sleep 1d
+$ docker run -d --name c2 --network my_net alpine sleep 1d
+$ docker exec c1 ping c2
+
+5. Troubleshooting
+-----------------
+
+5.1 Connectivity Issues:
+$ docker network inspect <network>
+$ docker inspect <container> | grep IPAddress
+
+5.2 Port Conflicts:
+$ sudo lsof -i :8080
+$ docker run -d -p 8081:80 nginx
+
+6. Lab Exercises
+---------------
+
+Exercise 1:
+1. Create custom bridge network
+2. Launch two alpine containers
+3. Verify ping by name
+
+Exercise 2:
+1. Create "web_app" network
+2. Run Nginx on network
+3. Map port 80→8080
+4. Access from host browser
+
+7. Cheat Sheet
+-------------
+
++----------------------+---------------------------------+
+| Command              | Description                     |
++----------------------+---------------------------------+
+| docker network ls    | List all networks               |
+| docker network create| Create new network              |
+| docker network inspect| View network details           |
+| docker network connect| Connect container to network   |
++----------------------+---------------------------------+
+
+Cleanup:
+$ docker network prune
+$ docker stop $(docker ps -aq)
+$ docker rm $(docker ps -aq)

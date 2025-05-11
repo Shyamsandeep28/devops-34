@@ -1,0 +1,143 @@
+Docker Networking Hands-On Lab (HOL)
+===================================
+
+Objective:
+Understand Docker networking concepts and master key networking commands.
+
+Section 1: Docker Networking Basics
+----------------------------------
+
+1.1 What is Docker Networking?
+Docker networking enables communication between:
+- Containers and Host
+- Containers and Other Containers
+- Containers and External Networks
+
+Default network drivers:
+1. Bridge (Default for containers)
+2. Host (Shares host's network stack)
+3. None (No networking)
+
+1.2 Key Concepts
+- Network Namespace: Isolated network stack for each container
+- Virtual Ethernet (veth): Connects container to the bridge
+- Bridge Network (docker0): Default internal network for containers
+
+Section 2: Key Networking Commands
+---------------------------------
+
+2.1 List Networks (docker network ls)
+$ docker network ls
+
+Output:
+NETWORK ID     NAME      DRIVER    SCOPE
+abc123         bridge    bridge    local
+def456         host      host      local
+ghi789         none      null      local
+
+Explanation:
+- Shows all Docker-managed networks
+- Default networks: bridge, host, none
+
+2.2 Inspect a Network (docker network inspect)
+$ docker network inspect bridge
+
+Output (JSON):
+{
+  "Name": "bridge",
+  "Containers": {
+    "a1b2c3d4": {
+      "Name": "my_container",
+      "IPv4Address": "172.17.0.2/16"
+    }
+  }
+}
+
+Key Fields:
+- Containers: Lists connected containers and their IPs
+- Subnet: IP range assigned to containers (e.g., 172.17.0.0/16)
+
+2.3 Create a Custom Bridge Network (docker network create)
+$ docker network create --driver bridge my_network
+
+Flags:
+- --subnet: Assign specific subnet (e.g., --subnet 192.168.1.0/24)
+- --gateway: Set custom gateway (e.g., --gateway 192.168.1.1)
+
+Use Case:
+Isolate containers for security (e.g., frontend and backend apps)
+
+2.4 Connect a Container to a Network
+$ docker run -d --name web --network my_network nginx
+
+OR connect existing container:
+$ docker network connect my_network web
+
+Verify:
+$ docker inspect web | grep IPAddress
+
+2.5 Disconnect a Container
+$ docker network disconnect my_network web
+
+2.6 Host Networking (--network host)
+$ docker run -d --network host nginx
+
+Behavior:
+- Container uses host's IP (no NAT)
+- Ports directly exposed (e.g., localhost:80)
+
+Warning: Less secure (bypasses Docker's network isolation)
+
+2.7 None Networking (--network none)
+$ docker run -it --network none alpine sh
+
+Use Case:
+- Security-sensitive containers (no network access)
+- Testing offline applications
+
+Section 3: Practical Scenarios
+-----------------------------
+
+Scenario 1: Multi-Container Communication
+1. Create custom network:
+   $ docker network create app_net
+2. Run containers:
+   $ docker run -d --name frontend --network app_net nginx
+   $ docker run -d --name backend --network app_net redis
+3. Test connectivity:
+   $ docker exec frontend ping backend
+
+Scenario 2: Expose Ports (-p Flag)
+$ docker run -d -p 8080:80 --name web nginx
+
+Explanation:
+- Host port 8080 → Container port 80
+- Access via http://localhost:8080
+
+Section 4: Troubleshooting
+--------------------------
+
+Issue 1: "Port Already Allocated"
+Solution:
+$ docker run -d -p 8081:80 nginx  # Use different host port
+
+Issue 2: Containers Can't Ping Each Other
+Debug Steps:
+1. Verify network membership:
+   $ docker inspect <container> | grep Network
+2. Check firewall rules:
+   $ sudo iptables -L
+
+Lab Summary
+-----------
+✓ Learned:
+- Default networks (bridge, host, none)
+- Key commands (ls, inspect, create, connect)
+- Port publishing (-p flag)
+
+Next Steps:
+- Explore overlay networks for Swarm clusters
+- Try Macvlan for assigning MAC addresses
+
+Cleanup:
+$ docker network prune  # Remove unused networks

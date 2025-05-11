@@ -1,0 +1,69 @@
+
+🔧 Hands-On Lab: Create Docker Image from a Container (`docker commit`)
+
+🧠 Objective
+Learn how to create a Docker image manually from a running container using the `docker commit` command.
+
+🧰 Prerequisites
+- Docker installed and running
+- Basic knowledge of Docker CLI
+
+🪜 Steps
+
+Step 1: Pull a Base Image
+--------------------------
+Start with an official base image (e.g., Ubuntu):
+    docker pull ubuntu
+
+Step 2: Run an Interactive Container
+------------------------------------
+Launch the container interactively:
+    docker run -it ubuntu
+
+You're now inside the container’s shell (`bash`).
+
+Step 3: Make Changes in the Container
+-------------------------------------
+Inside the container, install a package. For example:
+    apt-get update
+    apt-get install -y curl
+
+You can make other configuration changes if desired.
+
+Step 4: Exit the Container
+--------------------------
+Exit the container:
+    exit
+
+Find the container ID:
+    docker ps -a
+
+Copy the container ID of the one you just exited.
+
+Step 5: Commit the Container to Create an Image
+-----------------------------------------------
+Use `docker commit` to create a new image from the container:
+    docker commit <container_id> my-custom-ubuntu
+
+Replace `<container_id>` with your actual container ID.
+
+Step 6: Verify the Image
+------------------------
+List your images to see the newly created one:
+    docker images
+
+Step 7: Run the New Image
+-------------------------
+Run a container from your new image:
+    docker run -it my-custom-ubuntu
+
+You should find that `curl` is already installed.
+
+✅ Summary
+----------
+You’ve successfully:
+- Launched a base container
+- Installed software manually
+- Committed the container into a reusable image
+
+This is a quick and dirty method for creating Docker images. For production use, prefer Dockerfiles for better reproducibility and version control.

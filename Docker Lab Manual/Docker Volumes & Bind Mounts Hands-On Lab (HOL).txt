@@ -1,0 +1,101 @@
+Docker Volumes & Bind Mounts Hands-On Lab (HOL)
+==============================================
+
+Lab Objective:
+By the end of this lab, you will:
+- Understand Docker volumes vs. bind mounts
+- Create and manage persistent storage
+- Apply these concepts to real-world scenarios
+
+Section 1: Theory Overview
+--------------------------
+
+1.1 Why Persistent Storage?
+Containers are ephemeral - when they die, so does their filesystem. 
+Volumes/Mounts solve this by decoupling storage from containers.
+
+1.2 Key Concepts
+Type           Description                           Use Case
+Named Volume   Managed by Docker, stored in          Databases (PostgreSQL)
+               /var/lib/docker
+Bind Mount     Links container path to host          Development (source code)
+               filesystem
+
+Section 2: Hands-On Practice
+----------------------------
+
+2.1 Named Volumes
+
+Command 1: Create a Volume
+$ docker volume create mydata
+
+Explanation:
+- Creates a persistent storage named 'mydata'
+- Stored in Docker's managed directory (/var/lib/docker/volumes)
+
+Command 2: Use Volume in Container
+$ docker run -d --name mysql_db -v mydata:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secret mysql
+
+Breakdown:
+- -v mydata:/var/lib/mysql: Mounts 'mydata' volume to MySQL's data directory
+- Demo: Delete container and recreate to show data persists
+
+2.2 Bind Mounts
+
+Command 3: Mount Host Directory
+$ mkdir ~/dev_app && echo "Hello from host!" > ~/dev_app/test.txt
+$ docker run -v ~/dev_app:/app alpine cat /app/test.txt
+
+Key Points:
+- Host's ~/dev_app maps to container's /app
+- Changes on either side sync instantly (ideal for development)
+
+Live Editing Demo:
+1. In terminal:
+   $ docker run -it -v ~/dev_app:/app alpine sh
+2. Inside container:
+   # echo "Container wrote this!" >> /app/test.txt
+3. On host:
+   $ cat ~/dev_app/test.txt
+
+Section 3: Common Scenarios
+---------------------------
+
+Scenario 1: Database Backup
+Task: Backup PostgreSQL data using a volume.
+$ docker run -d --name pg_db -v pg_data:/var/lib/postgresql/data postgres
+$ docker exec pg_db pg_dumpall > backup.sql
+
+Scenario 2: Development Workflow
+Task: Mount a live Python app for debugging.
+$ docker run -it -v $(pwd)/src:/app python:3.9 bash
+
+Section 4: Troubleshooting
+--------------------------
+
+Issue 1: "Permission denied" on bind mounts
+Fix:
+$ docker run -v ~/host_dir:/container_dir:z alpine  # SELinux fix
+
+Issue 2: Volume not appearing
+Debug Steps:
+$ docker volume ls
+$ docker inspect <volume_name>
+
+Lab Wrap-Up
+-----------
+
+Key Takeaways:
+- Volumes = Docker-managed, good for production
+- Bind Mounts = Host-linked, perfect for development
+
+Real-World Analogy:
+"Volumes are like USB drives - portable and managed. 
+Bind Mounts are like shared network folders - directly linked to a source."
+
+Cleanup Command:
+$ docker system prune --volumes  # Cleans up lab resources
+
+Notes:
+- Timing: 60 mins (Theory: 15 mins, Hands-On: 35 mins, Q&A: 10 mins)
+- Prerequisites: Docker installed, basic CLI familiarity

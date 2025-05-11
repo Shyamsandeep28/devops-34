@@ -1,0 +1,84 @@
+Hands-On Lab (HOL): Creating Your First Docker Container
+========================================================
+
+Lab Objective:
+--------------
+This lab will guide you through creating your first Docker container using both 'docker run' and 'docker create' commands, including the use of the '--attach' ('-a') flag to interact with container output.
+
+Prerequisites:
+--------------
+- Docker installed (Ubuntu/Amazon Linux/CentOS)
+- Basic terminal knowledge
+- Internet access (to pull images)
+
+Section 1: Running Your First Container with 'docker run'
+--------------------------------------------------------
+
+Step 1.1: Run a Simple Container
+Execute the following command to download and run an Alpine Linux container:
+> docker run alpine echo "Hello, Docker!"
+
+Expected Output:
+Hello, Docker!
+
+Step 1.2: Run in Interactive Mode ('-it' flag)
+To keep the container running and interact with it:
+> docker run -it alpine sh
+
+Try running:
+> echo "I'm inside a container!"
+> exit  # (to exit)
+
+Section 2: Creating a Container with 'docker create'
+---------------------------------------------------
+
+Step 2.1: Create a Stopped Container
+> docker create --name my_alpine alpine echo "Hello from a created container"
+
+Step 2.2: Start the Container
+> docker start -a my_alpine
+
+Expected Output:
+Hello from a created container
+
+Section 3: Using '--attach' ('-a') for Output
+---------------------------------------------
+
+Step 3.1: Run and Attach to a Container
+> docker run -a STDOUT -a STDERR alpine echo "This goes to stdout"
+
+Step 3.2: Detached vs. Attached Mode
+- Detached (Background) Mode:
+  > docker run -d alpine ping 8.8.8.8
+
+- Attached Mode:
+  > docker run -a STDOUT alpine ping -c 3 8.8.8.8
+
+Section 4: Lab Verification
+---------------------------
+
+Step 4.1: Check Running Containers
+> docker ps
+(Use 'docker ps -a' to see stopped containers too.)
+
+Step 4.2: Clean Up
+> docker rm my_alpine  # Remove by name
+> docker container prune  # Remove all stopped containers
+
+Conclusion:
+-----------
+- Learned 'docker run' vs. 'docker create'
+- Used '-a' (attach) to capture container output
+- Ran containers in interactive ('-it') and detached ('-d') modes
+
+Next Steps:
+-----------
+- Try running an Nginx web server:
+  > docker run -d -p 8080:80 nginx
+- Visit http://localhost:8080 in your browser!
+
+Troubleshooting:
+----------------
+- "Unable to find image" → Run 'docker pull alpine' first
+- Permission denied → Use 'sudo' or add your user to the 'docker' group
+- Container exits immediately → Ensure your command keeps running (e.g., 'sh', 'ping')

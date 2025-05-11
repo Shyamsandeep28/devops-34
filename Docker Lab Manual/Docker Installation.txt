@@ -1,0 +1,117 @@
+Docker Installation Guide
+for Ubuntu, Amazon Linux, and CentOS
+
+Table of Contents
+1. Introduction
+2. Installing Docker on Ubuntu
+3. Installing Docker on Amazon Linux
+4. Installing Docker on CentOS
+5. Post-Installation Steps
+6. Troubleshooting
+7. Conclusion
+
+1. Introduction
+This document provides step-by-step instructions for installing Docker on three popular Linux distributions: Ubuntu, Amazon Linux, and CentOS.
+
+2. Installing Docker on Ubuntu
+
+2.1 Update Package Index
+Open a terminal and execute:
+sudo apt-get update
+
+2.2 Install Required Packages
+sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+
+2.3 Add Docker's Official GPG Key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+2.4 Add Docker Repository
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+2.5 Install Docker Engine
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+2.6 Verify Installation
+sudo docker run hello-world
+
+3. Installing Docker on Amazon Linux
+
+3.1 Update Packages
+sudo yum update -y
+
+3.2 Install Required Packages
+sudo yum install -y docker
+
+3.3 Start Docker Service
+sudo service docker start
+
+3.4 Enable Docker to Start on Boot
+sudo chkconfig docker on
+
+3.5 Add User to Docker Group (Optional)
+sudo usermod -a -G docker ec2-user
+
+3.6 Verify Installation
+sudo docker run hello-world
+
+4. Installing Docker on CentOS
+
+4.1 Update Packages
+sudo yum update -y
+
+4.2 Install Required Packages
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+
+4.3 Add Docker Repository
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+4.4 Install Docker Engine
+sudo yum install -y docker-ce docker-ce-cli containerd.io
+
+4.5 Start and Enable Docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+4.6 Verify Installation
+sudo docker run hello-world
+
+5. Post-Installation Steps (All Distributions)
+
+5.1 Check Docker Version
+docker --version
+
+5.2 Check Docker Status
+sudo systemctl status docker
+
+5.3 Run a Test Container
+sudo docker run -it ubuntu bash
+
+6. Troubleshooting
+
+6.1 Permission Denied
+Solution:
+sudo usermod -aG docker $USER
+newgrp docker
+
+6.2 Docker Service Not Starting
+Solution:
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+6.3 Unable to Connect to Docker Daemon
+Solution:
+sudo chmod 666 /var/run/docker.sock
+
+7. Conclusion
+You have now successfully installed Docker on your Linux system. You can begin exploring containerization by creating and managing Docker containers.
+
+For more information, visit the official Docker documentation at https://docs.docker.com/

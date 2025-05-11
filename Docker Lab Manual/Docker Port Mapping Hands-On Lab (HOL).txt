@@ -1,0 +1,96 @@
+Docker Port Mapping Hands-On Lab (HOL)
+=====================================
+
+1. Understanding Port Mapping
+----------------------------
+
+What is Port Mapping?
+- Connects host machine ports to container ports
+- Enables external access to containerized services
+- Uses -p or --publish flag in docker run
+
+Basic Syntax:
+docker run -p HOST_PORT:CONTAINER_PORT image_name
+
+2. Lab Exercises
+---------------
+
+Exercise 1: Basic Port Mapping
+1. Run Nginx with port mapping:
+   docker run -d -p 8080:80 --name web nginx
+
+2. Verify access:
+   curl http://localhost:8080
+   or open browser to http://localhost:8080
+
+3. Check mapped ports:
+   docker port web
+   Expected output: 80/tcp -> 0.0.0.0:8080
+
+Exercise 2: Advanced Port Mapping
+1. Map to specific host IP:
+   docker run -d -p 127.0.0.1:8081:80 --name web_local nginx
+
+2. Map UDP port:
+   docker run -d -p 5000:5000/udp --name udp_service some_udp_app
+
+3. Map multiple ports:
+   docker run -d -p 8082:80 -p 3000:3000 --name multi_port_app my_image
+
+Exercise 3: Troubleshooting
+1. Port already in use:
+   docker run -d -p 8080:80 nginx
+   Solution:
+   sudo lsof -i :8080  # Find process
+   sudo kill -9 <PID>  # Kill process
+   OR use different port: docker run -d -p 8081:80 nginx
+
+2. Connection refused:
+   Check:
+   - Is container running? (docker ps)
+   - Is app listening? (docker exec web netstat -tuln)
+
+3. Port Mapping Variations
+-------------------------
+
+1. Automatic host port:
+   docker run -d -p 80 --name web_auto nginx
+   Check with: docker port web_auto
+
+2. Port ranges:
+   docker run -d -p 8000-8005:8000-8005 --name port_range_app my_image
+
+3. View all mappings:
+   docker inspect --format='{{.NetworkSettings.Ports}}' web
+
+4. Cheat Sheet
+--------------
+
++---------------------------+-------------------------------------+
+| Command                   | Description                         |
++---------------------------+-------------------------------------+
+| docker run -p 80:80       | Basic port mapping                  |
+| docker run -p 8080:80/tcp | Explicit TCP protocol               |
+| docker run -p 5000:5000/udp | UDP port mapping                  |
+| docker port <container>   | Show mapped ports                   |
+| docker ps                 | List running containers             |
++---------------------------+-------------------------------------+
+
+5. Challenges
+------------
+
+Challenge 1:
+1. Run Python web app:
+   docker run -d -p 8888:8000 python:3.9 python -m http.server 8000
+2. Verify: curl http://localhost:8888
+
+Challenge 2:
+1. Run MySQL:
+   docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass --name db mysql
+2. Connect:
+   mysql -u root -h 127.0.0.1 -P 3306 -p
+
+Cleanup:
+--------
+docker stop web web_local udp_service multi_port_app
+docker rm web web_local udp_service multi_port_app

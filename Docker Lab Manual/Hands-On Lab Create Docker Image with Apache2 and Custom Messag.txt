@@ -1,0 +1,193 @@
+
+🧱 Understanding Dockerfile
+
+After learning how to create a Docker image from an existing container using `docker commit`, let’s move to a more scalable and maintainable approach: **Dockerfile**.
+
+🔍 What is a Dockerfile?
+A **Dockerfile** is a simple text file that contains a series of instructions used by Docker to automate the building of images. Think of it like a script that tells Docker step-by-step how to set up your environment.
+
+🛠️ Analogy
+When you **provision a traditional server**, you typically:
+1. Start with a base OS (e.g., Ubuntu).
+2. Install packages like PHP, MySQL, Jenkins.
+3. Configure the environment.
+4. Set up scripts to launch services.
+
+Each of these steps builds on top of the previous layer.
+
+**In Docker**, you do something very similar — but instead of logging into a server and running commands manually, you define all the steps in a Dockerfile. Docker uses this file to build an image layer-by-layer.
+
+📁 What’s Inside a Dockerfile?
+A Dockerfile is made up of instructions such as:
+- FROM – Base image (e.g., Ubuntu, Alpine, python)
+- RUN – Commands to install packages or configure
+- COPY or ADD – To bring in files
+- WORKDIR – Set working directory
+- CMD or ENTRYPOINT – Define the default command to run
+
+🧾 Example Use Case
+Let’s say you want to create a Docker image with **PHP**, **MySQL client**, and **Jenkins**. Instead of running commands manually, you write them in a Dockerfile like this:
+
+    FROM ubuntu:20.04
+
+    RUN apt-get update && \
+        apt-get install -y php mysql-client openjdk-11-jdk wget && \
+        wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | apt-key add - && \
+        echo "deb https://pkg.jenkins.io/debian binary/" > /etc/apt/sources.list.d/jenkins.list && \
+        apt-get update && \
+        apt-get install -y jenkins
+
+    CMD ["php", "-S", "0.0.0.0:80"]
+
+You then build the image using:
+
+    docker build -t my-php-jenkins-image .
+
+✅ Benefits of Using Dockerfile
+- Repeatable and version-controlled builds
+- Easier collaboration
+- Great for CI/CD pipelines
+- Declarative and portable
+
+
+=========================================================================================================
+
+🔧 Hands-On Lab: Create Docker Image with Apache2 and Custom Message
+
+🧠 Objective
+Create a Docker image that runs Apache2 and serves a custom message: 
+"Hi Sandeep, this is application running inside container."
+
+🧰 Prerequisites
+- Docker installed and running
+
+🪜 Steps
+
+Step 1: Create the Project Directory
+------------------------------------
+    mkdir apache-custom && cd apache-custom
+
+Step 2: Create an index.html File
+----------------------------------
+Create a file named `index.html` with the following content:
+
+    <!DOCTYPE html>
+    <html>
+    <head><title>Welcome</title></head>
+    <body>
+      <h1>Hi Sandeep, this is application running inside container.</h1>
+    </body>
+    </html>
+
+Step 3: Create a Dockerfile
+---------------------------
+Create a file named `Dockerfile` with the following content:
+
+    FROM ubuntu:20.04
+
+    ENV DEBIAN_FRONTEND=noninteractive
+
+    RUN apt-get update && \\
+        apt-get install -y apache2 && \\
+        apt-get clean
+
+    COPY index.html /var/www/html/index.html
+
+    EXPOSE 80
+
+    CMD ["apachectl", "-D", "FOREGROUND"]
+
+Step 4: Build the Docker Image
+------------------------------
+Run the following command to build the Docker image:
+
+    docker build -t apache-sandeep .
+
+Step 5: Run the Container
+-------------------------
+Run a container from the image and map port 80 to port 8080:
+
+    docker run -d -p 8080:80 apache-sandeep
+
+Step 6: Access the Application
+------------------------------
+Open your browser and go to:
+
+    http://localhost:8080
+
+You should see the message:
+
+    Hi Sandeep, this is application running inside container.
+
+✅ Summary
+----------
+You’ve successfully:
+- Created an Apache2-based Docker image
+- Served a custom HTML message
+- Verified it via browser access
+
+==================================================================================================================================
+
+
+
+🔧 Hands-On Lab: Create Docker Image from Dockerfile
+
+🧠 Objective
+Learn how to create a Docker image using a Dockerfile.
+
+🧰 Prerequisites
+- Docker installed and running
+- A basic project directory with a simple application (optional)
+
+🪜 Steps
+
+Step 1: Create a Project Directory
+----------------------------------
+    mkdir myapp && cd myapp
+
+Step 2: Create a Dockerfile
+---------------------------
+Inside the directory, create a file named `Dockerfile` with this content:
+
+    FROM python:3.10
+
+    WORKDIR /app
+
+    COPY . .
+
+    RUN pip install flask
+
+    CMD ["python", "app.py"]
+
+Step 3: Add a Simple App (Optional)
+-----------------------------------
+Create a file named `app.py`:
+
+    from flask import Flask
+    app = Flask(__name__)
+
+    @app.route("/")
+    def hello():
+        return "Hello from Docker!"
+
+    if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=5000)
+
+Step 4: Build the Docker Image
+------------------------------
+    docker build -t flask-app .
+
+Step 5: Run the Container
+-------------------------
+    docker run -p 5000:5000 flask-app
+
+Visit `http://localhost:5000` in your browser. You should see "Hello from Docker!"
+
+✅ Summary
+----------
+You’ve successfully:
+- Written a Dockerfile
+- Built an image from it
+- Run a container with your app
+
+This method is the most maintainable and widely used way to create Docker images.

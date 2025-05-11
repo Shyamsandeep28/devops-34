@@ -1,0 +1,129 @@
+Docker Basic Commands Hands-On Lab (HOL)
+=======================================
+
+Objective:
+Learn essential Docker commands for managing images and containers.
+
+1. Docker Images: docker image
+--------------------------------
+
+Purpose:
+Manage Docker images (pull, list, remove, inspect).
+
+1.1 List Images (docker image ls)
+$ docker image ls
+Output:
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+alpine       latest    c059bfaa849c   2 weeks ago    5.59MB
+nginx        latest    605c77e624dd   3 weeks ago    141MB
+
+Explanation:
+- Shows all locally stored images
+- REPOSITORY: Image name (e.g., nginx, alpine)
+- TAG: Version (default: latest)
+- IMAGE ID: Unique identifier
+
+1.2 Pull an Image (docker pull)
+$ docker pull ubuntu:20.04
+Explanation:
+- Downloads the ubuntu image with tag 20.04 from Docker Hub
+
+1.3 Remove an Image (docker image rm)
+$ docker image rm alpine
+Explanation:
+- Deletes the alpine image
+- Error if containers use it? Yes! Use -f to force
+
+2. Managing Containers: docker ps
+---------------------------------
+
+Purpose:
+List running/stopped containers.
+
+2.1 List Running Containers (docker ps)
+$ docker ps
+Output:
+CONTAINER ID   IMAGE     COMMAND       CREATED        STATUS        PORTS     NAMES
+a1b2c3d4e5f6   nginx     "nginx -g..." 5 minutes ago  Up 5 minutes  80/tcp    webserver
+
+Explanation:
+- CONTAINER ID: Unique ID
+- STATUS: Up (running) or Exited (stopped)
+- PORTS: Exposed ports
+
+2.2 List All Containers (docker ps -a)
+$ docker ps -a
+Explanation:
+- Shows all containers (running + stopped)
+
+2.3 Remove Stopped Containers (docker rm)
+$ docker rm a1b2c3d4e5f6
+Explanation:
+- Deletes a stopped container (use -f to force remove running ones)
+
+3. Searching Images: docker search
+---------------------------------
+
+Purpose:
+Find images on Docker Hub.
+
+Example:
+$ docker search mysql
+Output:
+NAME        DESCRIPTION                    STARS     OFFICIAL
+mysql       MySQL is a...                  14k       [OK]
+mariadb     MariaDB is...                  4k        [OK]
+
+Explanation:
+- OFFICIAL: Verified by Docker ([OK])
+- STARS: Popularity rating
+
+4. Inspecting Objects: docker inspect
+-------------------------------------
+
+Purpose:
+Get detailed metadata about images/containers.
+
+4.1 Inspect an Image
+$ docker inspect nginx
+Output (JSON):
+{
+  "Id": "sha256:605c77e624dd...",
+  "Architecture": "amd64",
+  "Os": "linux",
+  "Config": {
+    "Cmd": ["nginx", "-g", "daemon off;"]
+  }
+}
+
+Key Fields:
+- Config.Cmd: Default command
+- ExposedPorts: Ports exposed
+
+4.2 Inspect a Container
+$ docker inspect a1b2c3d4e5f6
+Useful Fields:
+- NetworkSettings.IPAddress (Container's IP)
+- Mounts (Volume mappings)
+
+Lab Tasks
+---------
+✓ Task 1: Pull httpd:latest and list images
+✓ Task 2: Run an NGINX container and check its status
+✓ Task 3: Search for "python" images and inspect one
+
+Cheat Sheet
+-----------
+Command               Description
+docker image ls       List images
+docker pull <image>   Download image
+docker ps -a          Show all containers
+docker search <term>  Find images
+docker inspect <name> Get detailed info
+
+Next Steps
+----------
+→ Try docker logs to view container output
+→ Explore docker stats for real-time monitoring
+
+Enjoy Dockering! 🐳

@@ -1,0 +1,81 @@
+# Hands-On Lab (HOL) Guide: Ubuntu Container with Apache2
+
+## Step 1: Create an Ubuntu container with port mapping
+
+# Pull the latest Ubuntu image
+docker pull ubuntu:latest
+
+# Create and run a container with port mapping (host port 8080 to container port 80)
+docker run -itd --name my_apache_container -p 8080:80 ubuntu:latest
+
+# Verify the container is running
+docker ps
+
+## Step 2: Connect to the container and install Apache2
+
+# Connect to the running container
+docker exec -it my_apache_container /bin/bash
+
+# Once inside the container, update package lists
+apt-get update
+
+# Install Apache2
+apt-get install -y apache2
+
+# Install text editor (nano) for later customization
+apt-get install -y nano
+
+## Step 3: Start Apache2 and customize default page
+
+# Start Apache service (inside container)
+service apache2 start
+
+# Make Apache start automatically on container boot (optional)
+update-rc.d apache2 defaults
+
+# Customize the default webpage
+nano /var/www/html/index.html
+
+# Add some HTML content, for example:
+<html>
+<head><title>My Custom Apache Page</title></head>
+<body>
+<h1>Welcome to my Apache container!</h1>
+<p>This page was customized inside an Ubuntu container.</p>
+</body>
+</html>
+
+# Save the file (Ctrl+O, Enter, Ctrl+X in nano)
+
+## Access the application from the internet
+
+1. Open a web browser on your host machine
+2. Navigate to: http://localhost:8080
+3. You should see your customized Apache default page
+
+## Create a .txt file
+
+# Still inside the container, create a text file
+echo "This is a test file created inside the container" > /var/www/html/test.txt
+
+# Verify the file exists and has content
+cat /var/www/html/test.txt
+
+# Exit the container
+exit
+
+## Verification from host machine
+
+# Access the text file from your host machine's browser
+# Open: http://localhost:8080/test.txt
+
+# Or using curl from terminal
+curl http://localhost:8080/test.txt
+
+## Cleanup (when done)
+
+# Stop the container
+docker stop my_apache_container
+
+# Remove the container
+docker rm my_apache_container

@@ -1,0 +1,115 @@
+Docker Port Mapping Hands-On Lab (HOL)
+=====================================
+
+1. Understanding Port Mapping
+----------------------------
+
+1.1 What is Port Mapping?
+- Connects host machine ports to container ports
+- Enables external access to containerized services
+- Uses -p or --publish flag in docker run commands
+
+1.2 Key Concepts:
++----------------+-----------------------------------------+
+| Term           | Description                             |
++----------------+-----------------------------------------+
+| Host Port      | Physical port on your machine (e.g 8080)|
+| Container Port | Port used by app inside container       |
+| Protocol       | TCP (default) or UDP                    |
++----------------+-----------------------------------------+
+
+2. Lab Exercises
+---------------
+
+2.1 Basic Web Server Port Mapping
+$ docker run -d -p 8080:80 --name web nginx
+$ curl http://localhost:8080
+$ docker port web
+
+2.2 Advanced Configurations
+- Specific IP Binding:
+  $ docker run -d -p 127.0.0.1:8081:80 --name web_local nginx
+
+- UDP Port Mapping:
+  $ docker run -d -p 5000:5000/udp --name dns_server some_dns_app
+
+- Multiple Ports:
+  $ docker run -d -p 8082:80 -p 3000:3000 --name complex_app my_image
+
+2.3 Dynamic Port Assignment
+$ docker run -d -p 80 --name auto_port_web nginx
+$ docker port auto_port_web
+
+3. Real-World Scenarios
+----------------------
+
+3.1 Database Access
+$ docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secret --name mysql_db mysql:5.7
+$ mysql -u root -h 127.0.0.1 -P 3306 -p
+
+3.2 Microservices Setup
+$ docker run -d -p 3000:3000 --name frontend react_app
+$ docker run -d -p 5000:5000 --name backend node_api
+$ docker run -d -p 5432:5432 --name db postgres
+
+4. Troubleshooting Guide
+------------------------
+
+4.1 Port Already in Use
+$ sudo lsof -i :8080
+$ sudo kill -9 <PID>
+OR
+$ docker run -d -p 8081:80 nginx
+
+4.2 Connection Refused
+$ docker ps
+$ docker exec web netstat -tulnp
+$ sudo ufw status
+
+5. Best Practices
+----------------
+
+1. Avoid host network mode
+2. Use explicit protocols (-p 53:53/udp)
+3. Document in Dockerfile (EXPOSE 80/tcp)
+4. Consider port ranges for clusters (-p 8000-8010:8000-8010)
+
+6. Verification Checklist
+-------------------------
+✓ Web server with port mapping
+✓ Accessed service from host
+✓ Mapped multiple ports
+✓ Configured UDP service
+✓ Resolved port conflict
+
+7. Cheat Sheet
+-------------
++------------------------------+---------------------------------+
+| Command                      | Description                     |
++------------------------------+---------------------------------+
+| docker run -p 80:80          | Basic port mapping              |
+| docker run -p 8080:80/tcp    | Explicit TCP protocol           |
+| docker run -p 53:53/udp      | UDP port mapping                |
+| docker port <container>      | Show active port mappings       |
+| docker inspect web           | Detailed port configuration     |
++------------------------------+---------------------------------+
+
+8. Further Challenges
+--------------------
+
+Challenge 1: Reverse Proxy
+1. Run Nginx on port 80
+2. Proxy to:
+   - Web app (3000)
+   - API (5000)
+
+Challenge 2: Port Security
+1. Container only accepts localhost connections
+2. Verify external access blocked
+
+Save this lab:
+# Linux/macOS
+curl -o Docker_Port_Mapping_Mastery.txt https://example.com/port-mapping-lab
+
+# Windows
+curl.exe -o Docker_Port_Mapping_Mastery.txt https://example.com/port-mapping-lab
