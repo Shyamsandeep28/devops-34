@@ -1,0 +1,233 @@
+
+========================================
+1. user_group_admin.sh
+========================================
+#!/bin/bash
+
+
+# Function to add a user
+add_user() {
+  read -p "Enter username to add: " username
+  sudo useradd "$username" && echo "User '$username' added successfully." || echo "Failed to add user."
+}
+
+# Function to delete a user
+delete_user() {
+  read -p "Enter username to delete: " username
+  sudo userdel "$username" && echo "User '$username' deleted successfully." || echo "Failed to delete user."
+}
+
+# Function to list all users
+list_users() {
+  echo "List of users:"
+  cut -d: -f1 /etc/passwd
+}
+
+# Function to add a group
+add_group() {
+  read -p "Enter group name to add: " groupname
+  sudo groupadd "$groupname" && echo "Group '$groupname' added successfully." || echo "Failed to add group."
+}
+
+# Function to delete a group
+delete_group() {
+  read -p "Enter group name to delete: " groupname
+  sudo groupdel "$groupname" && echo "Group '$groupname' deleted successfully." || echo "Failed to delete group."
+}
+
+# Function to list all groups
+list_groups() {
+  echo "List of groups:"
+  cut -d: -f1 /etc/group
+}
+
+# Main menu
+while true; do
+  echo "=========================="
+  echo "User & Group Management"
+  echo "=========================="
+  echo "1. Add User"
+  echo "2. Delete User"
+  echo "3. List Users"
+  echo "4. Add Group"
+  echo "5. Delete Group"
+  echo "6. List Groups"
+  echo "7. Exit"
+  read -p "Choose an option [1-7]: " choice
+
+  case $choice in
+    1) add_user ;;
+    2) delete_user ;;
+    3) list_users ;;
+    4) add_group ;;
+    5) delete_group ;;
+    6) list_groups ;;
+    7) echo "Exiting..."; break ;;
+    *) echo "Invalid option. Please choose between 1-7." ;;
+  esac
+done
+
+======================================================================
+
+
+
+
+Create a shell script to add, delete, and list users and groups
+*************************************************
+
+#!/bin/bash
+
+
+# Function to create a directory
+create_directory() {
+  read -p "Enter the directory name to create: " dirname
+  mkdir -p "$dirname" && echo "Directory '$dirname' created." || echo "Failed to create directory."
+}
+
+# Function to set permissions
+set_permissions() {
+  read -p "Enter the file/directory name: " name
+  read -p "Enter permission value (e.g., 755, 644): " perms
+  chmod "$perms" "$name" && echo "Permissions set to $perms on '$name'." || echo "Failed to set permissions."
+}
+
+# Function to check disk usage
+check_disk_usage() {
+  echo "Disk usage of current directory:"
+  du -sh .
+  echo "Overall disk usage:"
+  df -h
+}
+
+
+while true; do
+  echo "=============================="
+  echo "File System Management Script"
+  echo "=============================="
+  echo "1. Create Directory"
+  echo "2. Set Permissions"
+  echo "3. Check Disk Usage"
+  echo "4. Exit"
+  read -p "Choose an option [1-4]: " choice
+
+  case $choice in
+    1) create_directory ;;
+    2) set_permissions ;;
+    3) check_disk_usage ;;
+    4) echo "Exiting..."; break ;;
+    *) echo "Invalid option. Please choose between 1-4." ;;
+  esac
+done
+
+***********************************************************************
+=====================================================================
+
+
+Write a script to monitor system performance (CPU, memory usage) and
+generate periodic reports.
+**************************************************************************
+
+What the Script Does:
+Collects CPU and memory usage using top and free
+
+Appends data to a log file
+
+Runs in a loop at regular intervals (e.g., every 1 minute)
+
+Includes timestamps for each entry
+
+
+========================================================================
+
+
+#!/bin/bash
+
+# Script to monitor CPU and memory usage and log it periodically
+
+# Output log file
+LOG_FILE="/var/log/system_performance.log"
+
+# Interval in seconds (e.g., 60 seconds = 1 minute)
+INTERVAL=60
+
+# Ensure the log file exists
+touch "$LOG_FILE"
+
+# Infinite loop to monitor periodically
+while true; do
+  echo "==============================" >> "$LOG_FILE"
+  echo "Report Timestamp: $(date)" >> "$LOG_FILE"
+  echo "" >> "$LOG_FILE"
+
+  echo "--- CPU Usage (top 5 processes by CPU) ---" >> "$LOG_FILE"
+  top -b -n1 | head -n 12 >> "$LOG_FILE"
+
+  echo "" >> "$LOG_FILE"
+  echo "--- Memory Usage ---" >> "$LOG_FILE"
+  free -h >> "$LOG_FILE"
+
+  echo "" >> "$LOG_FILE"
+  echo "==============================" >> "$LOG_FILE"
+  echo "" >> "$LOG_FILE"
+
+  # Wait for the defined interval
+  sleep "$INTERVAL"
+done
+
+======================================================================================
+
+
+=======================================================================================
+
+
+
+Implement file system management tasks using shell scripting, such as creating directories, setting permissions, and managing disk usage
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#!/bin/bash
+
+# Simple File System Management Script
+
+# Log file
+LOG_FILE="./filesystem_manager.log"
+
+# Function to log messages with timestamps
+log_message() {
+    echo "[$(date)] $1" | tee -a "$LOG_FILE"
+}
+
+# Get input
+read -p "Enter the directory path to manage: " DIR
+read -p "Enter permission (e.g., 755): " PERM
+read -p "Enter owner username: " OWNER
+read -p "Enter group name: " GROUP
+
+# 1. Create directory if it doesn't exist
+if [ -d "$DIR" ]; then
+    log_message "Directory '$DIR' already exists."
+else
+    mkdir -p "$DIR"
+    log_message "Directory '$DIR' created."
+fi
+
+# 2. Set ownership
+chown "$OWNER":"$GROUP" "$DIR" 2>>"$LOG_FILE"
+if [ $? -eq 0 ]; then
+    log_message "Owner set to $OWNER and group to $GROUP for $DIR."
+else
+    log_message "Failed to set ownership for $DIR."
+fi
+
+# 3. Set permissions
+chmod "$PERM" "$DIR" 2>>"$LOG_FILE"
+if [ $? -eq 0 ]; then
+    log_message "Permissions set to $PERM for $DIR."
+else
+    log_message "Failed to set permissions for $DIR."
+fi
+
+# 4. Show disk usage
+USAGE=$(du -sh "$DIR" 2>/dev/null)
+log_message "Disk usage of '$DIR': $USAGE"
+
+******************************************************************************************
